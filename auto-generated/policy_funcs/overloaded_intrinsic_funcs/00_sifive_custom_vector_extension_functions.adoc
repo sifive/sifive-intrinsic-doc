@@ -1,0 +1,211 @@
+
+=== SiFive Custom Vector Extension Functions
+
+[[policy-variant-overloadedsifive-int8-sfvqmaccqoq]]
+==== SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256, Xsfvqmaccqoq
+
+[,c]
+----
+vint32m1_t __riscv_sf_vqmacc_4x8x4_i32m1_tu(vint32m1_t vd, vint8m1_t vs1,
+                                            vint8mf2_t vs2, size_t vl);
+vint32m2_t __riscv_sf_vqmacc_4x8x4_i32m2_tu(vint32m2_t vd, vint8m1_t vs1,
+                                            vint8m1_t vs2, size_t vl);
+vint32m4_t __riscv_sf_vqmacc_4x8x4_i32m4_tu(vint32m4_t vd, vint8m1_t vs1,
+                                            vint8m2_t vs2, size_t vl);
+vint32m8_t __riscv_sf_vqmacc_4x8x4_i32m8_tu(vint32m8_t vd, vint8m1_t vs1,
+                                            vint8m4_t vs2, size_t vl);
+vint32m1_t __riscv_sf_vqmaccus_4x8x4_i32m1_tu(vint32m1_t vd, vuint8m1_t vs1,
+                                              vint8mf2_t vs2, size_t vl);
+vint32m2_t __riscv_sf_vqmaccus_4x8x4_i32m2_tu(vint32m2_t vd, vuint8m1_t vs1,
+                                              vint8m1_t vs2, size_t vl);
+vint32m4_t __riscv_sf_vqmaccus_4x8x4_i32m4_tu(vint32m4_t vd, vuint8m1_t vs1,
+                                              vint8m2_t vs2, size_t vl);
+vint32m8_t __riscv_sf_vqmaccus_4x8x4_i32m8_tu(vint32m8_t vd, vuint8m1_t vs1,
+                                              vint8m4_t vs2, size_t vl);
+vint32m1_t __riscv_sf_vqmaccsu_4x8x4_i32m1_tu(vint32m1_t vd, vint8m1_t vs1,
+                                              vuint8mf2_t vs2, size_t vl);
+vint32m2_t __riscv_sf_vqmaccsu_4x8x4_i32m2_tu(vint32m2_t vd, vint8m1_t vs1,
+                                              vuint8m1_t vs2, size_t vl);
+vint32m4_t __riscv_sf_vqmaccsu_4x8x4_i32m4_tu(vint32m4_t vd, vint8m1_t vs1,
+                                              vuint8m2_t vs2, size_t vl);
+vint32m8_t __riscv_sf_vqmaccsu_4x8x4_i32m8_tu(vint32m8_t vd, vint8m1_t vs1,
+                                              vuint8m4_t vs2, size_t vl);
+vint32m1_t __riscv_sf_vqmaccu_4x8x4_i32m1_tu(vint32m1_t vd, vuint8m1_t vs1,
+                                             vuint8mf2_t vs2, size_t vl);
+vint32m2_t __riscv_sf_vqmaccu_4x8x4_i32m2_tu(vint32m2_t vd, vuint8m1_t vs1,
+                                             vuint8m1_t vs2, size_t vl);
+vint32m4_t __riscv_sf_vqmaccu_4x8x4_i32m4_tu(vint32m4_t vd, vuint8m1_t vs1,
+                                             vuint8m2_t vs2, size_t vl);
+vint32m8_t __riscv_sf_vqmaccu_4x8x4_i32m8_tu(vint32m8_t vd, vuint8m1_t vs1,
+                                             vuint8m4_t vs2, size_t vl);
+----
+
+[[policy-variant-overloadedsifive-int8-sfvqmaccdod]]
+==== SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128, Xsfvqmaccdod
+
+[,c]
+----
+vint32m1_t __riscv_sf_vqmacc_2x8x2_i32m1_tu(vint32m1_t vd, vint8m1_t vs1,
+                                            vint8m1_t vs2, size_t vl);
+vint32m2_t __riscv_sf_vqmacc_2x8x2_i32m2_tu(vint32m2_t vd, vint8m1_t vs1,
+                                            vint8m2_t vs2, size_t vl);
+vint32m4_t __riscv_sf_vqmacc_2x8x2_i32m4_tu(vint32m4_t vd, vint8m1_t vs1,
+                                            vint8m4_t vs2, size_t vl);
+vint32m8_t __riscv_sf_vqmacc_2x8x2_i32m8_tu(vint32m8_t vd, vint8m1_t vs1,
+                                            vint8m8_t vs2, size_t vl);
+vint32m1_t __riscv_sf_vqmaccus_2x8x2_i32m1_tu(vint32m1_t vd, vuint8m1_t vs1,
+                                              vint8m1_t vs2, size_t vl);
+vint32m2_t __riscv_sf_vqmaccus_2x8x2_i32m2_tu(vint32m2_t vd, vuint8m1_t vs1,
+                                              vint8m2_t vs2, size_t vl);
+vint32m4_t __riscv_sf_vqmaccus_2x8x2_i32m4_tu(vint32m4_t vd, vuint8m1_t vs1,
+                                              vint8m4_t vs2, size_t vl);
+vint32m8_t __riscv_sf_vqmaccus_2x8x2_i32m8_tu(vint32m8_t vd, vuint8m1_t vs1,
+                                              vint8m8_t vs2, size_t vl);
+vint32m1_t __riscv_sf_vqmaccsu_2x8x2_i32m1_tu(vint32m1_t vd, vint8m1_t vs1,
+                                              vuint8m1_t vs2, size_t vl);
+vint32m2_t __riscv_sf_vqmaccsu_2x8x2_i32m2_tu(vint32m2_t vd, vint8m1_t vs1,
+                                              vuint8m2_t vs2, size_t vl);
+vint32m4_t __riscv_sf_vqmaccsu_2x8x2_i32m4_tu(vint32m4_t vd, vint8m1_t vs1,
+                                              vuint8m4_t vs2, size_t vl);
+vint32m8_t __riscv_sf_vqmaccsu_2x8x2_i32m8_tu(vint32m8_t vd, vint8m1_t vs1,
+                                              vuint8m8_t vs2, size_t vl);
+vint32m1_t __riscv_sf_vqmaccu_2x8x2_i32m1_tu(vint32m1_t vd, vuint8m1_t vs1,
+                                             vuint8m1_t vs2, size_t vl);
+vint32m2_t __riscv_sf_vqmaccu_2x8x2_i32m2_tu(vint32m2_t vd, vuint8m1_t vs1,
+                                             vuint8m2_t vs2, size_t vl);
+vint32m4_t __riscv_sf_vqmaccu_2x8x2_i32m4_tu(vint32m4_t vd, vuint8m1_t vs1,
+                                             vuint8m4_t vs2, size_t vl);
+vint32m8_t __riscv_sf_vqmaccu_2x8x2_i32m8_tu(vint32m8_t vd, vuint8m1_t vs1,
+                                             vuint8m8_t vs2, size_t vl);
+----
+
+[[policy-variant-overloadedsifive-ranged-clip-sfvfnrclipxfqf]]
+==== SiFive Custom FP32-to-int8 Ranged Clip Instructions, Xsfvfnrclipxfqf
+
+[,c]
+----
+vint8mf8_t __riscv_sf_vfnrclip_x_f_qf_i8mf8_tu(vint8mf8_t vd, vfloat32mf2_t vs2,
+                                               float rs1, size_t vl);
+vint8mf4_t __riscv_sf_vfnrclip_x_f_qf_i8mf4_tu(vint8mf4_t vd, vfloat32m1_t vs2,
+                                               float rs1, size_t vl);
+vint8mf2_t __riscv_sf_vfnrclip_x_f_qf_i8mf2_tu(vint8mf2_t vd, vfloat32m2_t vs2,
+                                               float rs1, size_t vl);
+vint8m1_t __riscv_sf_vfnrclip_x_f_qf_i8m1_tu(vint8m1_t vd, vfloat32m4_t vs2,
+                                             float rs1, size_t vl);
+vint8m2_t __riscv_sf_vfnrclip_x_f_qf_i8m2_tu(vint8m2_t vd, vfloat32m8_t vs2,
+                                             float rs1, size_t vl);
+vuint8mf8_t __riscv_sf_vfnrclip_xu_f_qf_u8mf8_tu(vuint8mf8_t vd,
+                                                 vfloat32mf2_t vs2, float rs1,
+                                                 size_t vl);
+vuint8mf4_t __riscv_sf_vfnrclip_xu_f_qf_u8mf4_tu(vuint8mf4_t vd,
+                                                 vfloat32m1_t vs2, float rs1,
+                                                 size_t vl);
+vuint8mf2_t __riscv_sf_vfnrclip_xu_f_qf_u8mf2_tu(vuint8mf2_t vd,
+                                                 vfloat32m2_t vs2, float rs1,
+                                                 size_t vl);
+vuint8m1_t __riscv_sf_vfnrclip_xu_f_qf_u8m1_tu(vuint8m1_t vd, vfloat32m4_t vs2,
+                                               float rs1, size_t vl);
+vuint8m2_t __riscv_sf_vfnrclip_xu_f_qf_u8m2_tu(vuint8m2_t vd, vfloat32m8_t vs2,
+                                               float rs1, size_t vl);
+// masked functions
+vint8mf8_t __riscv_sf_vfnrclip_x_f_qf_i8mf8_tum(vbool64_t vm, vint8mf8_t vd,
+                                                vfloat32mf2_t vs2, float rs1,
+                                                size_t vl);
+vint8mf4_t __riscv_sf_vfnrclip_x_f_qf_i8mf4_tum(vbool32_t vm, vint8mf4_t vd,
+                                                vfloat32m1_t vs2, float rs1,
+                                                size_t vl);
+vint8mf2_t __riscv_sf_vfnrclip_x_f_qf_i8mf2_tum(vbool16_t vm, vint8mf2_t vd,
+                                                vfloat32m2_t vs2, float rs1,
+                                                size_t vl);
+vint8m1_t __riscv_sf_vfnrclip_x_f_qf_i8m1_tum(vbool8_t vm, vint8m1_t vd,
+                                              vfloat32m4_t vs2, float rs1,
+                                              size_t vl);
+vint8m2_t __riscv_sf_vfnrclip_x_f_qf_i8m2_tum(vbool4_t vm, vint8m2_t vd,
+                                              vfloat32m8_t vs2, float rs1,
+                                              size_t vl);
+vuint8mf8_t __riscv_sf_vfnrclip_xu_f_qf_u8mf8_tum(vbool64_t vm, vuint8mf8_t vd,
+                                                  vfloat32mf2_t vs2, float rs1,
+                                                  size_t vl);
+vuint8mf4_t __riscv_sf_vfnrclip_xu_f_qf_u8mf4_tum(vbool32_t vm, vuint8mf4_t vd,
+                                                  vfloat32m1_t vs2, float rs1,
+                                                  size_t vl);
+vuint8mf2_t __riscv_sf_vfnrclip_xu_f_qf_u8mf2_tum(vbool16_t vm, vuint8mf2_t vd,
+                                                  vfloat32m2_t vs2, float rs1,
+                                                  size_t vl);
+vuint8m1_t __riscv_sf_vfnrclip_xu_f_qf_u8m1_tum(vbool8_t vm, vuint8m1_t vd,
+                                                vfloat32m4_t vs2, float rs1,
+                                                size_t vl);
+vuint8m2_t __riscv_sf_vfnrclip_xu_f_qf_u8m2_tum(vbool4_t vm, vuint8m2_t vd,
+                                                vfloat32m8_t vs2, float rs1,
+                                                size_t vl);
+// masked functions
+vint8mf8_t __riscv_sf_vfnrclip_x_f_qf_i8mf8_tumu(vbool64_t vm, vint8mf8_t vd,
+                                                 vfloat32mf2_t vs2, float rs1,
+                                                 size_t vl);
+vint8mf4_t __riscv_sf_vfnrclip_x_f_qf_i8mf4_tumu(vbool32_t vm, vint8mf4_t vd,
+                                                 vfloat32m1_t vs2, float rs1,
+                                                 size_t vl);
+vint8mf2_t __riscv_sf_vfnrclip_x_f_qf_i8mf2_tumu(vbool16_t vm, vint8mf2_t vd,
+                                                 vfloat32m2_t vs2, float rs1,
+                                                 size_t vl);
+vint8m1_t __riscv_sf_vfnrclip_x_f_qf_i8m1_tumu(vbool8_t vm, vint8m1_t vd,
+                                               vfloat32m4_t vs2, float rs1,
+                                               size_t vl);
+vint8m2_t __riscv_sf_vfnrclip_x_f_qf_i8m2_tumu(vbool4_t vm, vint8m2_t vd,
+                                               vfloat32m8_t vs2, float rs1,
+                                               size_t vl);
+vuint8mf8_t __riscv_sf_vfnrclip_xu_f_qf_u8mf8_tumu(vbool64_t vm, vuint8mf8_t vd,
+                                                   vfloat32mf2_t vs2, float rs1,
+                                                   size_t vl);
+vuint8mf4_t __riscv_sf_vfnrclip_xu_f_qf_u8mf4_tumu(vbool32_t vm, vuint8mf4_t vd,
+                                                   vfloat32m1_t vs2, float rs1,
+                                                   size_t vl);
+vuint8mf2_t __riscv_sf_vfnrclip_xu_f_qf_u8mf2_tumu(vbool16_t vm, vuint8mf2_t vd,
+                                                   vfloat32m2_t vs2, float rs1,
+                                                   size_t vl);
+vuint8m1_t __riscv_sf_vfnrclip_xu_f_qf_u8m1_tumu(vbool8_t vm, vuint8m1_t vd,
+                                                 vfloat32m4_t vs2, float rs1,
+                                                 size_t vl);
+vuint8m2_t __riscv_sf_vfnrclip_xu_f_qf_u8m2_tumu(vbool4_t vm, vuint8m2_t vd,
+                                                 vfloat32m8_t vs2, float rs1,
+                                                 size_t vl);
+// masked functions
+vint8mf8_t __riscv_sf_vfnrclip_x_f_qf_i8mf8_mu(vbool64_t vm, vint8mf8_t vd,
+                                               vfloat32mf2_t vs2, float rs1,
+                                               size_t vl);
+vint8mf4_t __riscv_sf_vfnrclip_x_f_qf_i8mf4_mu(vbool32_t vm, vint8mf4_t vd,
+                                               vfloat32m1_t vs2, float rs1,
+                                               size_t vl);
+vint8mf2_t __riscv_sf_vfnrclip_x_f_qf_i8mf2_mu(vbool16_t vm, vint8mf2_t vd,
+                                               vfloat32m2_t vs2, float rs1,
+                                               size_t vl);
+vint8m1_t __riscv_sf_vfnrclip_x_f_qf_i8m1_mu(vbool8_t vm, vint8m1_t vd,
+                                             vfloat32m4_t vs2, float rs1,
+                                             size_t vl);
+vint8m2_t __riscv_sf_vfnrclip_x_f_qf_i8m2_mu(vbool4_t vm, vint8m2_t vd,
+                                             vfloat32m8_t vs2, float rs1,
+                                             size_t vl);
+vuint8mf8_t __riscv_sf_vfnrclip_xu_f_qf_u8mf8_mu(vbool64_t vm, vuint8mf8_t vd,
+                                                 vfloat32mf2_t vs2, float rs1,
+                                                 size_t vl);
+vuint8mf4_t __riscv_sf_vfnrclip_xu_f_qf_u8mf4_mu(vbool32_t vm, vuint8mf4_t vd,
+                                                 vfloat32m1_t vs2, float rs1,
+                                                 size_t vl);
+vuint8mf2_t __riscv_sf_vfnrclip_xu_f_qf_u8mf2_mu(vbool16_t vm, vuint8mf2_t vd,
+                                                 vfloat32m2_t vs2, float rs1,
+                                                 size_t vl);
+vuint8m1_t __riscv_sf_vfnrclip_xu_f_qf_u8m1_mu(vbool8_t vm, vuint8m1_t vd,
+                                               vfloat32m4_t vs2, float rs1,
+                                               size_t vl);
+vuint8m2_t __riscv_sf_vfnrclip_xu_f_qf_u8m2_mu(vbool4_t vm, vuint8m2_t vd,
+                                               vfloat32m8_t vs2, float rs1,
+                                               size_t vl);
+----
+
+[[policy-variant-overloadedsifive-vcix]]
+==== VCIX Instructions, Xsfvcp
+Intrinsics here don't have a policy variant.
+
+[[policy-variant-overloadedsifive-vcix]]
+==== VCIX Widen Instructions, Xsfvcp
+Intrinsics here don't have a policy variant.
