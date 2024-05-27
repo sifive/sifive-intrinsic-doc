@@ -1,0 +1,3 @@
+[submodule "rvv-intrinsic-doc"]
+	path = rvv-intrinsic-doc
+	url = git@github.com:riscv-non-isa/rvv-intrinsic-doc.git
