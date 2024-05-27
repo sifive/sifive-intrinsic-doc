@@ -1,0 +1,5 @@
+# Omit logs generated when running run-api-testing / run-overloaded-api-testing
+*.log
+*.xml
+.tmp
+__pycache__
