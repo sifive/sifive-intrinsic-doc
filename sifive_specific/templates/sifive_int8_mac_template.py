@@ -36,9 +36,10 @@ def render(G, op_list, type_list, sew_list, lmul_list, decorator_list):
       data_type = args["TYPE"]
       op = args["OP"].replace(".", "_")
       real_op = args["OP"].split(".")[1]
+      # print(real_op)
       sew = args["SEW"]
       lmul = args["LMUL"]
-      args["OP"] = op
+      args["OP"] = real_op
 
       if data_type == "float":
         args["S_TYPE"] = "f"
