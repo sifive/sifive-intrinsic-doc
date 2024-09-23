@@ -100,8 +100,7 @@ def render(G, op_list, type_list, sew_list, lmul_list, decorator_list):
       else:
         return_type = type_helper.v
 
-      args["OP"] = args["OP"].replace(".", "_")
-
+      args["OP"] = args["OP"].replace(".", "_").split("_")[1]
       inst_info = InstInfo.get(args, decorator, getattr(InstType,
                                                         inst_type_str))
 

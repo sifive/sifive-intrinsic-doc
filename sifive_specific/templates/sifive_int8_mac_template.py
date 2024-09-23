@@ -33,30 +33,39 @@ def render(G, op_list, type_list, sew_list, lmul_list, decorator_list):
   for decorator in decorator_list:
     decorator.write_text_header(G)
     for args in prod(OP=op_list, TYPE=type_list, SEW=sew_list, LMUL=lmul_list):
-      data_type = args["TYPE"]
+      data_type = args["TYPE"] # int or uint
+      print("------------")
+      print("data_type:"+data_type)
       op = args["OP"].replace(".", "_")
       real_op = args["OP"].split(".")[1]
+      print("real_op:"+real_op)
       sew = args["SEW"]
+      print("sew:"+str(sew))
       lmul = args["LMUL"]
-      args["OP"] = op
+      print("lmul:"+str(lmul))
+      args["OP"] = real_op
 
-      if data_type == "float":
-        args["S_TYPE"] = "f"
-        args["OP"] = "f" + op
-      else:
-        args["S_TYPE"] = "x"
+#       don't have float type now according to the spec
+#       if data_type == "float":
+#         args["S_TYPE"] = "f"
+#         args["OP"] = "f" + op
+#       else:
+#         args["S_TYPE"] = "x"
 
-      if real_op == "vqmaccu" and data_type == "int":
-        continue
-      elif real_op == "vqmacc" and data_type == "uint":
-        continue
-      elif real_op != "vqmaccu" and data_type == "uint":
+# return type: all vint{sew}m{lmul}
+#       if real_op == "vqmaccu" and data_type == "int":
+#         continue
+#       elif real_op == "vqmacc" and data_type == "uint":
+#         continue
+#       elif real_op != "vqmaccu" and data_type == "uint":
+#         continue
+      if data_type == "uint":
         continue
 
       type_helper = TypeHelper(**args)
-
-      args["SEW"] = args["QSEW"]
+      args["SEW"] = args["QSEW"] # 4*sew
       lmul_multipler = 4
+      print("op:"+op)
       if op.endswith("4x8x4"):
         w_vtype = sfqv4x8x4(args)
         args["LMUL"] = args["WLMUL"]
@@ -74,10 +83,22 @@ def render(G, op_list, type_list, sew_list, lmul_list, decorator_list):
 
       inst_info = InstInfo.get(args, decorator, InstType.VVV)
       rt = w_vtype
+      print("rt:"+rt)
       if "maccsu" in op:
+        print("maccsu op:"+op)
         G.func(
             inst_info,
-            name="{OP}_int{SEW}m{LMUL}".format_map(args) +
+            name="{OP}_4x8x4_int{SEW}m{LMUL}".format_map(args) +
+            decorator.func_suffix,
+            return_type=rt,
+            **decorator.mask_args(type_helper.m, type_helper.v),
+            vd=rt,
+            vs1=sivm1(args),
+            vs2=type_helper.uiv,
+            vl=type_helper.size_t)
+        G.func(
+            inst_info,
+            name="{OP}_2x8x2_int{SEW}m{LMUL}".format_map(args) +
             decorator.func_suffix,
             return_type=rt,
             **decorator.mask_args(type_helper.m, type_helper.v),
@@ -86,9 +107,20 @@ def render(G, op_list, type_list, sew_list, lmul_list, decorator_list):
             vs2=type_helper.uiv,
             vl=type_helper.size_t)
       elif "maccus" in op:
+        print("maccus op:"+op)
         G.func(
             inst_info,
-            name="{OP}_int{SEW}m{LMUL}".format_map(args) +
+            name="{OP}_4x8x4_int{SEW}m{LMUL}".format_map(args) +
+            decorator.func_suffix,
+            return_type=rt,
+            **decorator.mask_args(type_helper.m, type_helper.v),
+            vd=rt,
+            vs1=uivm1(args),
+            vs2=type_helper.siv,
+            vl=type_helper.size_t)
+        G.func(
+            inst_info,
+            name="{OP}_2x8x2_int{SEW}m{LMUL}".format_map(args) +
             decorator.func_suffix,
             return_type=rt,
             **decorator.mask_args(type_helper.m, type_helper.v),
@@ -97,9 +129,10 @@ def render(G, op_list, type_list, sew_list, lmul_list, decorator_list):
             vs2=type_helper.siv,
             vl=type_helper.size_t)
       else:
+        print("else op:"+op)
         G.func(
             inst_info,
-            name="{OP}_int{SEW}m{LMUL}".format_map(args) +
+            name="{OP}_4x8x4_int{SEW}m{LMUL}".format_map(args) +
             decorator.func_suffix,
             return_type=rt,
             **decorator.mask_args(type_helper.m, type_helper.v),
@@ -107,5 +140,14 @@ def render(G, op_list, type_list, sew_list, lmul_list, decorator_list):
             vs1=type_helper.vm1,
             vs2=type_helper.v,
             vl=type_helper.size_t)
-
+        G.func(
+            inst_info,
+            name="{OP}_2x8x2_int{SEW}m{LMUL}".format_map(args) +
+            decorator.func_suffix,
+            return_type=rt,
+            **decorator.mask_args(type_helper.m, type_helper.v),
+            vd=rt,
+            vs1=type_helper.vm1,
+            vs2=type_helper.v,
+            vl=type_helper.size_t)
   G.inst_group_epilogue()
