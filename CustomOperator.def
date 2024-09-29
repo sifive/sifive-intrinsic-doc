@@ -1006,7 +1006,6 @@ CUSTOM_OP_TYPE(IotaM64VUInt64VB, iota_m, 64, UNSIGNED_INT, HaveVLParameter | Non
 CUSTOM_OP_TYPE(IotaM64VUInt64VBVB_m, iota_m, 64, UNSIGNED_INT, HaveVLParameter | MaskedOperation, OneDUInt64, 2, OneDBool, OneDBool)
 CUSTOM_OP_TYPE(IotaM8VUInt8VB, iota_m, 8, UNSIGNED_INT, HaveVLParameter | NonmaskedOperation, OneDUInt8, 1, OneDBool)
 CUSTOM_OP_TYPE(IotaM8VUInt8VBVB_m, iota_m, 8, UNSIGNED_INT, HaveVLParameter | MaskedOperation, OneDUInt8, 2, OneDBool, OneDBool)
-CUSTOM_OP_TYPE(Lm0VBoolSU, lm_, 0, BOOL, HaveVLParameter | NonmaskedOperation, OneDBool, 1, ScalarUInt8)
 CUSTOM_OP_TYPE(Lmul_ext_vMUL_EXT16VFloat16VF, lmul_ext_v_mul_ext, 16, FLOAT, NoVLParameter | NonmaskedOperation, OneDFloat16, 1, OneDFloat16)
 CUSTOM_OP_TYPE(Lmul_ext_vMUL_EXT16VInt16VI, lmul_ext_v_mul_ext, 16, SIGNED_INT, NoVLParameter | NonmaskedOperation, OneDInt16, 1, OneDInt16)
 CUSTOM_OP_TYPE(Lmul_ext_vMUL_EXT16VUInt16VU, lmul_ext_v_mul_ext, 16, UNSIGNED_INT, NoVLParameter | NonmaskedOperation, OneDUInt16, 1, OneDUInt16)
