@@ -2274,7 +2274,6 @@ CUSTOM_OP_TYPE(SllVX8VInt8VBVISL_m, sll_vx, 8, SIGNED_INT, HaveVLParameter | Mas
 CUSTOM_OP_TYPE(SllVX8VInt8VISL, sll_vx, 8, SIGNED_INT, HaveVLParameter | NonmaskedOperation, OneDInt8, 2, OneDInt8, ScalarUIntXLen)
 CUSTOM_OP_TYPE(SllVX8VUInt8VBVUSL_m, sll_vx, 8, UNSIGNED_INT, HaveVLParameter | MaskedOperation, OneDUInt8, 3, OneDBool, OneDUInt8, ScalarUIntXLen)
 CUSTOM_OP_TYPE(SllVX8VUInt8VUSL, sll_vx, 8, UNSIGNED_INT, HaveVLParameter | NonmaskedOperation, OneDUInt8, 2, OneDUInt8, ScalarUIntXLen)
-CUSTOM_OP_TYPE(Sm0VoidSUVB, sm_, 0, VOID, HaveVLParameter | NonmaskedOperation | VoidOperation, Void, 2, ScalarUInt8, OneDBool)
 CUSTOM_OP_TYPE(SmulVV16VInt16VBVIVISL_m, smul_vv, 16, SIGNED_INT, HaveVLParameter | MaskedOperation, OneDInt16, 4, OneDBool, OneDInt16, OneDInt16, ScalarUIntXLen)
 CUSTOM_OP_TYPE(SmulVV16VInt16VIVISL, smul_vv, 16, SIGNED_INT, HaveVLParameter | NonmaskedOperation, OneDInt16, 3, OneDInt16, OneDInt16, ScalarUIntXLen)
 CUSTOM_OP_TYPE(SmulVV32VInt32VBVIVISL_m, smul_vv, 32, SIGNED_INT, HaveVLParameter | MaskedOperation, OneDInt32, 4, OneDBool, OneDInt32, OneDInt32, ScalarUIntXLen)
