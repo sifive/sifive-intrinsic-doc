@@ -197,7 +197,7 @@ class RIFGenerator(Generator):
     if inst_info.extra_attr & enums.ExtraAttr.INT_EXTENSION:
       op_id = f"{inst_info.OP[1:]}"
     elif inst_info.mem_type == enums.MemType.STORE:
-      op_id = f"{inst_info.OP}_v"
+      op_id = f"{inst_info.OP[1:]}_v"
     elif inst_info.OP.startswith("mv") or inst_info.OP.startswith("fmv"):
       op_id = f"{inst_info.OP[1:]}_{'_'.join(output_inst_type.lower())}"
     elif inst_info.OP == "id":
@@ -211,10 +211,10 @@ class RIFGenerator(Generator):
       op_id = f"{inst_info.OP[1:]}_{suffix}"
     else:
       op_id = f"{inst_info.OP[1:]}_{output_inst_type[1:].lower()}"
-    if is_load or is_store:
-      op_name = inst_info.OP
-    else:
-      op_name = inst_info.OP[1:]
+    # if is_load or is_store:
+    #   op_name = inst_info.OP
+    # else:
+    op_name = inst_info.OP[1:]
     op_type = f"{first_letter_upper(op_name)}\
 {output_inst_type[1:]}{inst_info.SEW}\
 {rif_return_type.short_type_name + in_args_sig_str}"
