@@ -61,7 +61,7 @@ gen-test:
 
 rif:
 	$(MAKE) -C rvv-intrinsic-doc/rvv-intrinsic-generator vendor-generator \
-		OUTPUT_DIR=$(OUTPUT_DIR) \
+		OUTPUT_DIR=$(CURDIR)/$(OUTPUT_DIR) \
 		VENDOR_INST=$(CURDIR)/sifive_specific/vendor_inst.py \
 		VENDOR_GENERATOR_SCRIPT=$(CURDIR)/sifive_specific/vendor_generator.py \
 		VENDOR_GENERATOR_NAME=RIFGenerator \
