@@ -2,12 +2,12 @@
 SiFive-specific instructions.
 """
 
-from intrinsic_decorator import IntrinsicDecorators
+from rvv_intrinsic_gen.intrinsic_decorator import IntrinsicDecorators
 
 from templates import sifive_int8_mac_template as sfint8mac_op_tmpl
 from templates import sifive_clipxfqf_template as sfclipxfqf_op_tmpl
 from templates import sifive_vcix_op_template as sifive_vcix_op_tmpl
-from constants import LMULS, WLMULS, NCVTLMULS, SEWS, WSEWS, ITYPES
+from rvv_intrinsic_gen.constants import LMULS, WLMULS, NCVTLMULS, SEWS, WSEWS, ITYPES
 
 
 def gen(g):
