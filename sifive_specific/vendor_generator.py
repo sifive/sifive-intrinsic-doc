@@ -4,8 +4,8 @@ SiFive-specific generators.
 
 import copy
 import re
-from generator import Generator
-import enums
+from rvv_intrinsic_gen.generator import Generator
+import rvv_intrinsic_gen.enums
 
 
 def base_type_to_rif_base_type(typename):
@@ -24,7 +24,7 @@ def is_tuple_type(typename):
 
 def parse_rif_vector_type(typename, is_always_lmul1):
   vtype = re.compile(
-      r"v(int|uint|float|bfloat)(8|16|32|64)m(f8|f4|f2|1|2|4|8)_t")
+      r"v(int|uint|float|bfloat)(8|16|32|64)m(f8|f4|f2|1|2|4|8)x?[2-8]?_t")
   match = vtype.search(typename)
   if match:
     # LMUL information is not needed here, it is configurable in RIF.
@@ -121,7 +121,6 @@ def rvvtype2sig(typename):
   riftype = RIFType(typename)
   return riftype.sig
 
-
 def first_letter_upper(s):
   return s[0].upper() + s[1:]
 
@@ -144,14 +143,14 @@ class RIFGenerator(Generator):
       return
 
     # TODO: Skip any type with tuple type for now.
-    if any(map(is_tuple_type, [return_type] + list(kwargs.values()))):
-      return
+    # if any(map(is_tuple_type, [return_type] + list(kwargs.values()))):
+    #   return
 
-    is_reduc = inst_info.extra_attr & enums.ExtraAttr.REDUCE != 0
-    is_load = inst_info.mem_type == enums.MemType.LOAD
-    is_store = inst_info.mem_type == enums.MemType.STORE
-    is_seg_store = is_store and "v0" in kwargs
-    rif_return_type = RIFType(return_type, is_always_lmul1=is_reduc)
+    is_reduc = inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.REDUCE != 0
+    is_load = inst_info.mem_type == rvv_intrinsic_gen.enums.MemType.LOAD
+    is_store = inst_info.mem_type == rvv_intrinsic_gen.enums.MemType.STORE
+    is_seg_store = is_store and any(map(is_tuple_type, [return_type] + list(kwargs.values())))
+    rif_return_type = RIFType(return_type)
 
     # CUSTOM_OP_TYPE(AddVX32, 32, SIGNED_INT, OneDInt32, 2, OneDInt32,
     #                ScalarInt32)
@@ -161,17 +160,16 @@ class RIFGenerator(Generator):
     # Remove `vl` argument.
     in_args_map.pop("vl", None)
 
-    if is_reduc:
-      # Remove `scalar` and `dest` argument for reduction.
-      in_args_map.pop("scalar", None)
-      in_args_map.pop("dest", None)
+    # if is_reduc:
+    #   # Remove `scalar` and `dest` argument for reduction.
+    #   in_args_map.pop("scalar", None)
+    #   in_args_map.pop("dest", None)
 
     if is_store:
       in_args_map.pop("base", None)
 
     n_in_args = len(in_args_map.keys())
-
-    inst_attrs = []
+    inst_attrs = self.get_tail_policy_attribute(inst_info.OP, inst_info)
     if vl_arg_p:
       inst_attrs.append("HaveVLParameter")
     else:
@@ -186,23 +184,54 @@ class RIFGenerator(Generator):
       arg_name = arg[0]
       arg_type = arg[1]
       is_always_lmul1 = is_reduc and (arg_name in ["dest", "scalar"])
-      is_force_vector = is_load and arg_name == "base"
+      is_force_vector = is_load
       riftype = RIFType(arg_type, is_always_lmul1, is_force_vector)
       return riftype.rif_type
+    def rvvtuple2riftype(arg):
+        if type(arg) == tuple:
+          arg_type = arg[1]
+        else:
+          arg_type = arg
+        pattern = re.compile(r".*x(\d+)_t")
+        match_tuple = pattern.search(arg_type)
+        if pattern.match(arg_type):
+          nfield = int(match_tuple.group(1))
+        else:
+          nfield = 1
+        return nfield
 
     in_args = list(map(rvvtype2riftype, in_args_map.items()))
     in_args_str = ", ".join(in_args)
     in_args_sig = list(map(rvvtype2sig, in_args_map.values()))
     in_args_sig_str = "".join(in_args_sig)
-    if inst_info.extra_attr & enums.ExtraAttr.INT_EXTENSION:
+    if (inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.REINT
+            or inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.VUNDEF
+            or inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.LMUL_EXT
+            or inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.LMUL_TRUNC
+            or inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.VGET
+            or inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.VSET
+            or inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.VCREATE
+            or inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.SETVL
+            or inst_info.inst_type == rvv_intrinsic_gen.enums.InstType.SETVLMAX):
+      inst_attrs.append("Miscellaneous")
+    if any(map(is_tuple_type, [return_type] + list(kwargs.values()))):
+      input_nfields_list = list(map(rvvtuple2riftype, in_args_map.items()))
+      input_nfields = "| ".join(map(str, input_nfields_list))
+      output_nfield = rvvtuple2riftype(return_type)
+    else:
+      output_nfield = None
+      input_nfields = None
+    if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.INT_EXTENSION:
       op_id = f"{inst_info.OP[1:]}"
-    elif inst_info.mem_type == enums.MemType.STORE:
+    elif "Miscellaneous" in inst_attrs:
+        op_id = f"{inst_info.OP}"
+    elif inst_info.mem_type == rvv_intrinsic_gen.enums.MemType.STORE:
       op_id = f"{inst_info.OP}_v"
-    elif inst_info.OP.startswith("mv") or inst_info.OP.startswith("fmv"):
+    elif inst_info.OP.startswith("vmv") or inst_info.OP.startswith("vfmv"):
       op_id = f"{inst_info.OP[1:]}_{'_'.join(output_inst_type.lower())}"
-    elif inst_info.OP == "id":
+    elif inst_info.OP == "vid":
       op_id = "id_v"
-    elif inst_info.extra_attr & enums.ExtraAttr.CONVERT:
+    elif inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.CONVERT:
       x = name.split("_")
       if "rtz" in x or "rod" in x:
         suffix = "_".join(x[2:5])
@@ -219,61 +248,28 @@ class RIFGenerator(Generator):
 {output_inst_type[1:]}{inst_info.SEW}\
 {rif_return_type.short_type_name + in_args_sig_str}"
 
-    if inst_info.extra_attr & enums.ExtraAttr.IS_MASK:
-      op_type += "_m"
-      inst_attrs.append("MaskedOperation")
+    if input_nfields is not None:
+      input_nf_suffix = "".join(map(str, list(map(rvvtuple2riftype, in_args_map.items()))))
+      op_type = (f"{first_letter_upper(op_name)}{output_inst_type[1:]}"
+                 f"{inst_info.SEW}"
+                 f"{rif_return_type.short_type_name + in_args_sig_str}"
+                 f"{input_nf_suffix}"
+                 f"{output_nfield}"
+                 )
     else:
-      inst_attrs.append("NonmaskedOperation")
+      op_type = (f"{first_letter_upper(op_name)}{output_inst_type[1:]}"
+                 f"{inst_info.SEW}"
+                 f"{rif_return_type.short_type_name + in_args_sig_str}")
 
-    if inst_info.extra_attr & enums.ExtraAttr.NEED_MASKOFF:
-      inst_attrs.append("NeedMaskedOff")
-
-    if inst_info.extra_attr & enums.ExtraAttr.NEED_MERGE:
-      inst_attrs.append("NeedMerge")
-
-    if inst_info.extra_attr & enums.ExtraAttr.MERGE:
-      inst_attrs.append("MergeOperation")
-
-    if inst_info.extra_attr & enums.ExtraAttr.MAC:
-      inst_attrs.append("MulAddOperation")
-
-    if is_reduc:
-      inst_attrs.append("ReductionOperation")
-
-    if return_type == "void":
-      inst_attrs.append("VoidOperation")
-
-    if is_store:
-      inst_attrs.append("StoreOperation")
-
-    if is_load:
-      inst_attrs.append("LoadOperation")
-
-    if inst_info.extra_attr & enums.ExtraAttr.IS_TA:
-      inst_attrs.append("TailAgnostic")
-    elif inst_info.extra_attr & enums.ExtraAttr.IS_TU:
-      inst_attrs.append("TailUndisturbed")
-    elif inst_info.extra_attr & enums.ExtraAttr.IS_MA:
-      inst_attrs.append("MaskAgnostic")
-    elif inst_info.extra_attr & enums.ExtraAttr.IS_MU:
-      inst_attrs.append("MaskUndisturbed")
-    elif inst_info.extra_attr & (enums.ExtraAttr.IS_TAMA
-                                 | enums.ExtraAttr.IS_RED_TAMA):
-      inst_attrs.append("TailAgnostic")
-      inst_attrs.append("MaskAgnostic")
-    elif inst_info.extra_attr & enums.ExtraAttr.IS_TAMU:
-      inst_attrs.append("TailAgnostic")
-      inst_attrs.append("MaskUndisturbed")
-    elif inst_info.extra_attr & (enums.ExtraAttr.IS_TUMA
-                                 | enums.ExtraAttr.IS_RED_TUMA):
-      inst_attrs.append("TailUndisturbed")
-      inst_attrs.append("MaskAgnostic")
-    elif inst_info.extra_attr & enums.ExtraAttr.IS_TUMU:
-      inst_attrs.append("TailUndisturbed")
-      inst_attrs.append("MaskUndisturbed")
-
-    patterns = re.compile(r".*_(ta.*|tu.*|ma|mu)")
+    patterns = re.compile(r".*_(tu.*|m.*)")
     match = patterns.search(name)
+    if inst_info.mem_type == rvv_intrinsic_gen.enums.MemType.STORE and any(map(is_tuple_type, [return_type] + list(kwargs.values()))):
+      # no condition here
+      print("inst_info.mem_type")
+      print(inst_info.mem_type)
+      inst_attrs.append("SegStoreOperation")
+    if inst_info.mem_type == rvv_intrinsic_gen.enums.MemType.LOAD and any(map(is_tuple_type, [return_type] + list(kwargs.values()))):
+      inst_attrs.append("SegLoadOperation")
     if match:
       if op_type[-2:] == "_m":
         op_type = op_type[:-2]
@@ -293,6 +289,65 @@ class RIFGenerator(Generator):
 
     self.fd.write(output)
     self.fd.write("\n")
-
+  def get_tail_policy_attribute(self,name, inst_info, **kwargs):
+      """
+      Gets new suffix for instruction based on name and instruction information.
+      """
+      # policy intrinsics go here
+      inst_attrs = []
+      if rvv_intrinsic_gen.generator.CompatibleHeaderGenerator.is_policy_func(inst_info):
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_TU:
+              inst_attrs.append("TailUndisturbed")
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_MA:
+              inst_attrs.append("MaskAgnostic")
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_MU:
+              inst_attrs.append("MaskUndisturbed")
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_TAMA:
+              inst_attrs.append("MaskedOperation")
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_TAMU:
+              inst_attrs.append("MaskUndisturbed")
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_TUMA:
+              inst_attrs.append("TailUndisturbed")
+              inst_attrs.append("MaskAgnostic")
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_TUMU:
+              inst_attrs.append("TailUndisturbed")
+              inst_attrs.append("MaskUndisturbed")
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_MASK and \
+                  inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_RED_TUMA:
+              inst_attrs.append("TailUndisturbed")
+              inst_attrs.append("MaskAgnostic")
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_MASK and \
+                  inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_RED_TAMA:
+              inst_attrs.append("MaskedOperation")
+          else:
+            inst_attrs.append("NonmaskedOperation")
+      else:  # non-policy intrinsics go here
+          if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.IS_MASK:
+              inst_attrs.append("MaskedOperation")
+          else:
+              inst_attrs.append("NonmaskedOperation")
+      if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.REDUCE:
+          inst_attrs.append("ReductionOperation")
+      if inst_info.mem_type == rvv_intrinsic_gen.enums.MemType.LOAD:
+          inst_attrs.append("LoadOperation")
+      if inst_info.mem_type == rvv_intrinsic_gen.enums.MemType.STORE:
+          inst_attrs.append("StoreOperation")
+      if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.HAS_FRM:
+          inst_attrs.append("FRM")
+      if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.HAS_VXRM:
+          inst_attrs.append("VXRM")
+      if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.NEED_MASKOFF:
+          inst_attrs.append("NeedMaskedOff")
+      if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.NEED_MERGE:
+          inst_attrs.append("NeedMerge")
+      if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.MERGE:
+          inst_attrs.append("MergeOperation")
+      if inst_info.extra_attr & rvv_intrinsic_gen.enums.ExtraAttr.MAC:
+          inst_attrs.append("MulAddOperation")
+      # if self.return_type == "VOID":
+      #     inst_attrs.append("VoidOperation")
+      return inst_attrs
+      # CUSTOM_OP_TYPE(AddVX32, 32, SIGNED_INT, OneDInt32, 2, OneDInt32,
+      #                ScalarInt32)
   def ignore_zvqmac_section(self):
     return True
