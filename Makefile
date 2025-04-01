@@ -40,7 +40,7 @@ diff-autogen:
 	$(MAKE) gen-all OUTPUT_DIR=${TEST_DIR}
 	diff -qr ${TEST_DIR} ${GOLDEN_DIR}
 
-gen-all: gen-document gen-test rif
+gen-all: gen-document gen-test
 
 gen-document:
 	$(MAKE) -C rvv-intrinsic-doc/rvv-intrinsic-generator gen-document \
@@ -57,16 +57,6 @@ gen-test:
 		VENDOR_PATH=$(CURDIR)/sifive_specific \
 		VENDOR_INST=$(CURDIR)/sifive_specific/vendor_inst.py \
 		SKIP_DEFAULT_INST=ON
-	$(call replace_float, $(OUTPUT_DIR))
-
-rif:
-	$(MAKE) -C rvv-intrinsic-doc/rvv-intrinsic-generator vendor-generator \
-		OUTPUT_DIR=$(OUTPUT_DIR) \
-		VENDOR_INST=$(CURDIR)/sifive_specific/vendor_inst.py \
-		VENDOR_GENERATOR_SCRIPT=$(CURDIR)/sifive_specific/vendor_generator.py \
-		VENDOR_GENERATOR_NAME=RIFGenerator \
-		VENDOR_GENERATOR_OUTPUT=rif.def \
-		VENDOR_PATH=$(CURDIR)/sifive_specific
 	$(call replace_float, $(OUTPUT_DIR))
 
 yapf-format:
